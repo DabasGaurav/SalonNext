@@ -1,9 +1,14 @@
-# SalonNext
+# SalonNext functional prototype
 
-Landing page for a salon-focused Reel recommendation concept, adapted from [CreatorOS](https://github.com/DabasGaurav/CreatorOS) for an ISB GenAI practice assignment.
+SalonNext is a working one-feature prototype for the GenAI assignment. It adapts CreatorOS's evidence-first recommendation flow into a salon use case: a visitor supplies a salon type, audience, recent post patterns and a goal; the serverless function asks Gemini for one structured Reel opportunity; Supabase stores the request and response; the page shows the total request count and the visitor's remaining demo cap.
 
-**Live site:** https://dabasgaurav.github.io/SalonNext/
+## Required Vercel variables
 
-The recommendation shown on the page is illustrative. This repository contains the standalone landing page only; it does not include a working salon recommendation app or real salon analytics.
+Set these in Vercel Project Settings → Environment Variables. Values never belong in this repository:
 
-The site is a single self-contained `index.html` file published with GitHub Pages from `main`.
+`GEMINI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`
+
+## Supabase table
+
+Run `supabase-schema.sql` in the Supabase SQL Editor before testing. The service key is used only inside the Vercel function.
+
