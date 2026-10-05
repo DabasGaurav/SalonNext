@@ -15,4 +15,3 @@ create table if not exists public.salonnext_requests (
 );
 alter table public.salonnext_requests enable row level security;
 revoke all on public.salonnext_requests from anon, authenticated;
-
