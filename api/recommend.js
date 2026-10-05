@@ -1,5 +1,6 @@
 const crypto=require('node:crypto');
-const {refreshedSession,posts:instagramPosts}=require('../lib/instagram');
+const {refreshedSession,posts:instagramPosts,open,seal,cookies,cookie}=require('../lib/instagram');
+const {posts:demoPosts}=require('../lib/demo');
 const LIMIT=5;
 const MODEL='gemini-3.5-flash-lite';
 const WEIGHTS={creator_fit:.3,audience_demand:.2,trend_momentum:.15,novelty:.2,expected_engagement:.15};
@@ -45,8 +46,17 @@ function sameOrigin(req){
 }
 function safeWhyYou(input,a){
   const context=`The ${input.services} services and ${input.audience} audience were entered by you.`;
+  if(input.synthetic_data)return `${context} The post history shown here is fictional sample data, so it says nothing about your real Instagram performance. Use this idea as an example to test.`;
   if(a.captioned_posts<3)return `${context} Instagram supplied ${a.post_count} recent posts, but only ${a.captioned_posts} ${a.captioned_posts===1?'has a caption':'have captions'}, so they cannot establish a winning salon topic or audience preference. Treat this idea as a test.`;
   return `${context} ${a.captioned_posts} recent captions and ${a.measured_posts} posts with complete engagement metrics offer limited direction. This idea still needs testing with your clients.`;
+}
+function demoVisitor(req,res){
+  const existing=open(cookies(req).salonnext_demo);
+  if(existing?.id)return existing.id;
+  const id=crypto.randomUUID();
+  const exp=Date.now()+30*86400000;
+  res.setHeader('Set-Cookie',cookie('salonnext_demo',seal({id,exp}),30*86400));
+  return id;
 }
 module.exports=async(req,res)=>{
   res.setHeader('Content-Type','application/json');
@@ -57,17 +67,19 @@ module.exports=async(req,res)=>{
   }
   if(req.method!=='POST')return res.status(405).setHeader('Allow','GET, POST').json({error:'Method not allowed'});
   if(!sameOrigin(req))return res.status(403).json({error:'Please submit the form from SalonNext.'});
-  const connected=await refreshedSession(req,res);
-  if(!connected)return res.status(401).json({error:'Your Instagram connection has expired. Please connect it again.'});
+  const demoMode=req.body?.demo===true;
+  const connected=demoMode?null:await refreshedSession(req,res);
+  if(!demoMode&&!connected)return res.status(401).json({error:'Your Instagram connection has expired. Please connect it again.'});
   try{
     const input=clean(req.body||{});
     for(const key of ['salon_name','salon_type','location','audience','services','goal']){
       if(!input[key])return res.status(400).json({error:`Please provide ${key.replaceAll('_',' ')}.`});
     }
-    input.visitor_id=crypto.createHash('sha256').update(`instagram:${connected.id}`).digest('hex').slice(0,32);
+    input.synthetic_data=demoMode;
+    input.visitor_id=crypto.createHash('sha256').update(demoMode?`demo:${demoVisitor(req,res)}`:`instagram:${connected.id}`).digest('hex').slice(0,32);
     const used=await countRequests(input.visitor_id);
     if(used>=LIMIT)return res.status(429).json({error:`This Instagram account has reached the ${LIMIT}-recommendation demo limit.`});
-    input.posts=(await instagramPosts(connected.token,connected.id)).map(p=>({caption:p.caption,media_type:p.media_type,reach:p.reach,likes:p.likes,comments:p.comments,saves:p.saves,shares:p.shares}));
+    input.posts=(demoMode?demoPosts:await instagramPosts(connected.token,connected.id)).map(p=>({caption:p.caption,media_type:p.media_type,reach:p.reach,likes:p.likes,comments:p.comments,saves:p.saves,shares:p.shares}));
     const a=analytics(input.posts);
     let generated;
     if(!process.env.GEMINI_API_KEY)generated={parsed:fallback(input,a),sources:[],inputTokens:0,outputTokens:0};
@@ -90,6 +102,7 @@ module.exports=async(req,res)=>{
     if(!ranked.length)throw new Error('No ideas were generated. Please try again.');
     const recommendation=ranked[0];
     recommendation.why_you=safeWhyYou(input,a);
+    if(demoMode)recommendation.evidence_note=`Illustrative demo: all post captions and metrics are fictional. ${recommendation.evidence_note||''}`;
     const sources=generated.sources;
     if(!sources.length){
       recommendation.why_now='No verified live source was available for this request. The timing is a hypothesis based on your salon context.';
@@ -97,6 +110,7 @@ module.exports=async(req,res)=>{
       recommendation.scores.trend_momentum=Math.min(recommendation.scores.trend_momentum,.4);
     }
     const research={summary:sources.length?generated.parsed.research_summary:'No verified current public source was available. Trend timing and competitor observations are hypotheses.',sources,status:generated.researchFailure||null};
+    if(demoMode)a.summary=`Illustrative sample data only. ${a.summary}`;
     const record={visitor_id:input.visitor_id,salon_type:input.salon_type,audience:input.audience,recent_patterns:input.posts.filter(p=>p.caption).map(p=>p.caption).join(' | ').slice(0,2000)||'No captioned posts available',goal:input.goal,input_payload:input,output_payload:{recommendation,alternatives:ranked.slice(1),analytics:a,research},input_tokens:generated.inputTokens,output_tokens:generated.outputTokens,model:generated.fallback||!process.env.GEMINI_API_KEY?'fallback-cold-start':MODEL};
     await supabase('',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(record)});
     const total=await countRequests(null).catch(()=>used+1);

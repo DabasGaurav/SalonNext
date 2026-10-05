@@ -1,6 +1,6 @@
 # SalonNext
 
-SalonNext is a salon content-planning demo adapted from the CreatorOS recommendation flow. The public landing page stays at `/`; `/login.html` starts Instagram authorization; `/app.html` is the separate working planner.
+SalonNext is a salon content-planning demo adapted from the CreatorOS recommendation flow. The public landing page stays at `/`; `/login.html` starts Instagram authorization; `/app.html` is the connected planner. `/app.html?demo=1` is a public sample-data mode so a grader can try the core feature without a Meta app role.
 
 ## What works
 
@@ -9,6 +9,7 @@ SalonNext is a salon content-planning demo adapted from the CreatorOS recommenda
 - The server calculates engagement only for posts where Instagram supplied reach, likes, comments, saves, and shares. Uncaptioned posts remain uncaptioned. It asks Gemini for current public web evidence when Google Search grounding is available, creates three salon-specific opportunities, ranks them using five weighted fit factors, and returns one complete Reel package. If AI is unavailable, it returns a clearly labelled salon-service fallback.
 - The result separates why the idea fits the salon from why it may be timely and shows public source links when verified sources were returned. Without those links, trend and competitor timing is labelled as a hypothesis.
 - Supabase stores each request and response and supplies the public recommendation count shown in the planner. Five recommendations are allowed per connected Instagram account.
+- Public sample mode uses six fictional salon posts, clearly labels them as illustrative, and limits each browser to five recommendations using an encrypted, HttpOnly visitor cookie. It still calls the same Gemini and Supabase workflow. This mode does not fetch the visitor's Instagram analytics.
 - Instagram access tokens are encrypted in HttpOnly cookies, refreshed close to expiry where Meta permits, and cleared from the browser on sign-out. Users can reconnect if Meta denies a refresh.
 
 ## Current boundaries
