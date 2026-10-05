@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SalonNext · Your content desk</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="/">salon<span>next</span><small>CONTENT DESK</small></a>
+      <nav aria-label="Planner sections">
+        <a href="#overview" class="active">01 <span>Overview</span></a>
+        <a href="#salon">02 <span>Your salon</span></a>
+        <a href="#history">03 <span>Post analytics</span></a>
+        <a href="#research">04 <span>Niche & competitors</span></a>
+        <a href="#ideas">05 <span>Next idea</span></a>
+      </nav>
+      <div class="side-foot"><span class="avatar" id="avatar">S</span><div><strong id="signed-in">Demo visitor</strong><small>Demo access</small></div><button id="sign-out" type="button" title="Sign out">↗</button></div>
+    </aside>
+    <div class="workspace">
+      <header class="topbar"><button id="menu" class="menu" type="button" aria-label="Toggle menu">☰</button><span>SalonNext / Planner</span><a href="/">View landing page ↗</a></header>
+      <main>
+        <section class="intro" id="overview"><div><p class="eyebrow">Your next content move</p><h1>Make the next Reel <em>make sense.</em></h1><p>Use your salon’s actual posts, local niche and competitor observations to find a filmable idea. Evidence and assumptions stay visible.</p><div class="intro-actions"><a class="primary" href="#salon">Set up your salon ↗</a><span>About 3 minutes to prepare</span></div></div><div class="intro-card"><span class="icon">✦</span><p>ONE GOOD IDEA</p><strong>Based on your salon.<br>Made for this week.</strong><div class="line"></div><small>CreatorOS method · salon workflow</small></div></section>
+        <div class="metric-grid" id="metrics"><div class="metric"><span>Posts analysed</span><strong id="metric-posts">0</strong><small>from your input</small></div><div class="metric"><span>Median engagement rate</span><strong id="metric-engagement">—</strong><small>where reach is provided</small></div><div class="metric"><span>Winning angle</span><strong id="metric-angle" class="metric-word">Add posts</strong><small>highest measured post</small></div><div class="metric"><span>Ideas generated</span><strong id="metric-total">—</strong><small>from Supabase</small></div></div>
+
+        <form id="planner">
+          <section class="section-card" id="salon"><div class="section-head"><div><p class="eyebrow">01 · Your salon</p><h2>Tell us what you do.</h2><p>The recommendation should fit your services, customers and filming time.</p></div></div><div class="grid two"><label>Salon name <input name="salon_name" placeholder="e.g. Saffron Studio" required maxlength="80"></label><label>Salon niche <select name="salon_type"><option>Hair salon</option><option>Beauty salon</option><option>Barbershop</option><option>Nail salon</option><option>Spa</option><option>Bridal salon</option></select></label><label>City or neighbourhood <input name="location" placeholder="e.g. Bandra, Mumbai" required maxlength="80"></label><label>Main audience <input name="audience" placeholder="e.g. working women aged 25–40" required maxlength="100"></label><label class="wide">Your signature services <input name="services" placeholder="e.g. balayage, keratin, bridal styling" required maxlength="180"></label><label>Content goal <select name="goal"><option>Increase bookings</option><option>Promote a specific service</option><option>Reach local customers</option><option>Build trust with helpful content</option></select></label><label>Time available to film <select name="filming_time"><option>15 minutes</option><option>30 minutes</option><option>1 hour</option><option>Half a day</option></select></label><label>Brand voice <select name="voice"><option>Warm and expert</option><option>Playful and energetic</option><option>Premium and polished</option><option>Simple and educational</option></select></label><label>Caption language <select name="language"><option>English</option><option>Hinglish</option><option>Hindi</option></select></label></div></section>
+
+          <section class="section-card" id="history"><div class="section-head"><div><p class="eyebrow">02 · Post analytics</p><h2>Bring in what worked.</h2><p>Add recent Instagram posts. Reach and engagement counts let SalonNext calculate an actual engagement rate; captions alone still help it avoid repetition.</p></div><div class="section-actions"><button type="button" class="secondary" id="sample">Try sample data</button><label class="secondary file-label">Import CSV<input id="csv" type="file" accept=".csv,text/csv" hidden></label><button type="button" class="secondary" id="add-post">+ Add post</button></div></div><div class="table-scroll"><table><thead><tr><th>Caption or topic</th><th>Reach</th><th>Likes</th><th>Comments</th><th>Saves</th><th>Shares</th><th></th></tr></thead><tbody id="post-rows"></tbody></table></div><p class="hint">CSV headers: <code>caption,reach,likes,comments,saves,shares</code>. Sample data is fictional. Your input is stored with the recommendation in Supabase.</p></section>
+
+          <section class="section-card" id="research"><div class="section-head"><div><p class="eyebrow">03 · Niche & competitors</p><h2>Look beyond your own page.</h2><p>Describe comparable salons and the ideas you noticed. The planner also checks current public web signals when search grounding is available.</p></div></div><div class="grid two"><label class="wide">Comparable salons or public links <textarea name="competitors" rows="3" maxlength="600" placeholder="e.g. Salon A in Andheri posts quick hair repair tutorials; https://...\nSalon B uses bridal before-and-afters"></textarea></label><label class="wide">Any trend, season or client question you want considered? <textarea name="trend_notes" rows="2" maxlength="400" placeholder="e.g. festive bridal bookings, monsoon frizz, keratin questions"></textarea></label></div><p class="hint">A public link is context, not proof of a competitor’s private performance. We label unverified observations.</p></section>
+
+          <section class="generate" id="ideas"><div><p class="eyebrow">04 · Next idea</p><h2>Ready for a better Reel?</h2><p>SalonNext will research, compare several angles and return one filming package.</p></div><button type="submit" class="primary" id="generate">Find my next Reel ↗</button></section>
+        </form>
+        <div class="status" id="status" role="status"></div>
+        <section class="result" id="result" hidden aria-live="polite"></section>
+        <footer>SalonNext is a classroom prototype. Recommendations are creative suggestions, not performance guarantees. <a href="https://github.com/DabasGaurav/CreatorOS">Adapted from CreatorOS ↗</a></footer>
+      </main>
+    </div>
+  </div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
