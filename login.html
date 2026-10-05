@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Enter SalonNext</title>
+  <style>
+    :root{--ink:#18332a;--muted:#65746c;--cream:#fffaf1;--mint:#deefe4;--peach:#f7c7ad;--line:#d5e1d7}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}a{color:inherit}.top{max-width:1160px;margin:auto;padding:24px;display:flex;justify-content:space-between;align-items:center}.brand{text-decoration:none;font-weight:850;font-size:21px;letter-spacing:-.04em}.brand span{color:#c8734d}.back{font-size:14px;color:var(--muted);text-decoration:none}.back:hover{text-decoration:underline}main{max-width:1160px;margin:20px auto 70px;padding:20px;display:grid;grid-template-columns:1fr 1fr;min-height:620px}.story{background:var(--mint);border-radius:28px 0 0 28px;padding:clamp(32px,6vw,72px);display:flex;flex-direction:column;justify-content:space-between}.eyebrow{color:#bd704d;font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:800}.story h1{font-size:clamp(42px,5vw,72px);line-height:1;letter-spacing:-.06em;margin:20px 0}.story p{font-size:18px;max-width:410px;color:#476157}.sample{border-top:1px solid #bdd3c3;padding-top:20px;font-size:14px;color:#476157}.panel{background:white;border:1px solid var(--line);border-radius:0 28px 28px 0;padding:clamp(32px,6vw,72px);display:flex;flex-direction:column;justify-content:center}.panel h2{font-size:36px;line-height:1.08;letter-spacing:-.04em;margin:10px 0}.muted{color:var(--muted)}label{display:block;font-size:14px;font-weight:750;margin:30px 0 8px}input{width:100%;border:1px solid #bacfc0;border-radius:12px;padding:14px;font:inherit;color:var(--ink)}button{width:100%;border:0;border-radius:999px;background:var(--ink);color:white;font:inherit;font-weight:800;padding:15px;margin-top:17px;cursor:pointer}button:hover{background:#28513f}.fine{font-size:13px;color:var(--muted);margin-top:15px}.error{min-height:23px;color:#a44037;font-size:13px;margin-top:8px}@media(max-width:760px){main{display:block;margin-top:0}.story,.panel{border-radius:24px}.story{min-height:340px}.panel{margin-top:12px}.story h1{font-size:46px}}
+  </style>
+</head>
+<body>
+  <header class="top"><a class="brand" href="/">salon<span>next</span></a><a class="back" href="/">← Back to home</a></header>
+  <main>
+    <section class="story"><div><div class="eyebrow">Your content desk</div><h1>Walk in with a goal.<br>Leave with a Reel.</h1><p>Bring your recent posts and what your salon does best. SalonNext will help pick an idea you can actually film.</p></div><div class="sample">Past posts → niche research → ranked ideas → filming plan</div></section>
+    <section class="panel"><div class="eyebrow">Demo access</div><h2>Let's get started.</h2><p class="muted">Enter any email address to open the planner. No password or verification is needed for this classroom demo.</p><form id="entry"><label for="email">Email address</label><input id="email" type="email" autocomplete="email" placeholder="you@salon.com" required><div class="error" id="error" role="alert"></div><button type="submit">Continue to planner ↗</button></form><p class="fine">This is a simple demo entry, not a secure account. Your email stays in this browser and is not sent with a recommendation.</p></section>
+  </main>
+  <script>
+    const input=document.querySelector('#email');input.value=localStorage.getItem('salonnext_email')||'';
+    document.querySelector('#entry').addEventListener('submit',e=>{e.preventDefault();if(!input.checkValidity()){document.querySelector('#error').textContent='Enter a valid email address.';return;}localStorage.setItem('salonnext_email',input.value.trim());location.href='/app.html';});
+  </script>
+</body>
+</html>
